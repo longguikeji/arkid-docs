@@ -199,7 +199,7 @@ Docker 部署
    # - 访问地址
    ## 如果不能被公网访问将会影响部分需与第三方交互的功能，比如钉钉扫码登录等
    BASE_URL = 'https://arkid.longguikeji.com'
-   BAES_URL = "http://47.111.105.142"
+   BASE_URL = "http://47.111.105.142"
 
    # storage
    # - 目前文件一律存储于 minio 中，minio 的搭建不在此讨论范畴
