@@ -847,6 +847,8 @@ OAuth2.0 定义了四个角色、两种客户端类型、四种授权类型以�
 .. _Query Component: https://tools.ietf.org/html/rfc3986#section-3.4
 .. _Fragment Component: https://tools.ietf.org/html/rfc3986#section-3.5
 
+.. _ArkID issue 主页: https://github.com/longguikeji/arkid-core/issues
+
 LDAP
 ----
 
@@ -858,3 +860,25 @@ HTTP API
 
 \*二次开发指南
 ===============
+
+贡献指南
+===============
+
+如果你在使用 ArkID 的过程中遇到了 bug，或者期望某个 future 但 ArkID 不支持，欢迎你在 `ArkID issue 主页`_ 提出。
+如果你顺手修复了这个 bug，或者实现了这个 future，为了你的工作能使更多人受益，也为了你的代码和 ArkID 以后尽量不要有冲突，请按照 Fork -> Patch -> Push -> Pull Request 的流程，和大家分享你的代码。
+注意，在提 issues 或 PR 前请务必阅读以下内容:
+
+bug
+-----------------
+在提 issue 之前，请先搜索一下，同样的 bug 是不是已经被反馈过了。如果没有，请创建一个新的 issue，并反馈遇到此问题的环境、背景，以及如何复现这个 bug。详细、准确的描述，可以加快问题解决的速度。
+
+future
+-----------------
+在提 issue 之前，请先搜索一下，同样的 future 是不是已经被反馈过了。如果没有，请创建一个新的 issue，描述为什么需要这个 future，以及这个 future 的具体细节。将视此 future 的需求程度，排期实现。
+
+PR
+-----------------
+改动的内容需遵守代码风格检查，并通过所有的测试。CI 将会自动执行这个检测，成功或失败都会在 commit 上标注。检测不通过的 pr，不会被合并。
+本地开发时，如果环境装有 docker，可以通过 ``make ci`` 的命令自行检查。如果没有可以通过 ``make lint test`` 代替。
+
+..
