@@ -147,6 +147,8 @@ Docker 部署
 
        FE_DEV_PROXY_ONEID=http://127.0.0.1:8000 yarn serve
 
+.. _arkid_core: https://github.com/longguikeji/arkid-core
+.. _arkid_frontend: https://github.com/longguikeji/arkid-frontend
 ``settings_local.py`` 详解
 --------------------------
 
