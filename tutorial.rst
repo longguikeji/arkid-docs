@@ -662,9 +662,6 @@ OAuth2.0 定义了四个角色、两种客户端类型、四种授权类型以�
 本节部分内容为实现所定义（如权限的类型），并未在 RFC6749 中详细说明。
 
 .. TODO:
-   footnotes for open redirector and xsrf
-
-.. TODO:
    More custom blocks (e.g. Defined by Impl)
 
 授权端点
@@ -859,13 +856,16 @@ OAuth2.0 定义了四个角色、两种客户端类型、四种授权类型以�
 客户端凭据许可流程详解
 ::::::::::::::::::::::
 
-注
-::
+.. rubric:: 注
+
+.. [#f2] 在一账通中全部模式必选，但并不实际生效
+.. [#f3] ``state`` 参数一般用于携带一个可以防范 `CSRF 攻击`_ 的校验 Token，我们也 *推荐* 任何使用 OAuth2.0 协议的第三方客户端这样做
+.. [#f4] 对客户端重新指定的重定向端点进行二次校验的目的是防止授权服务器成为一个 `Open Redirector`_
+.. [#f5] 授权服务器会根据客户端的类型等信息进行综合判断，有可能选择缩小客户端申请的权限范围，此处返回的 ``scope`` 参数指示了授权服务器最终提供给该客户端的权限范围
 
 .. GLOBAL TODO:
    Using footnotes instead of parentheses
 
-.. [#f2] 在一账通中全部模式必选，但并不实际生效
 
 .. _RFC6749: https://github.com/jeansfish/RFC6749.zh-cn
 .. _OAuthLib: https://github.com/oauthlib/oauthlib
@@ -874,6 +874,9 @@ OAuth2.0 定义了四个角色、两种客户端类型、四种授权类型以�
 .. _Bearer 令牌: https://tools.ietf.org/html/rfc6750
 
 .. _OAuth 2.0 筆記: https://blog.yorkxin.org/2013/09/30/oauth2-1-introduction.html
+
+.. _CSRF 攻击: https://en.wikipedia.org/wiki/Cross-site_request_forgery
+.. _Open Redirector: https://tools.ietf.org/id/draft-bradley-oauth-open-redirector-01.html
 
 .. _Absolute URI: https://tools.ietf.org/html/rfc3986#section-4.3
 .. _Query Component: https://tools.ietf.org/html/rfc3986#section-3.4
