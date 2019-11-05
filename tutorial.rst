@@ -121,7 +121,7 @@ Docker 部署
 如何部署
 ::::::::
 
-1. 获取ArkID后端arkid-core的代码并运行。
+1. 获取一账通应用后端 `arkid-core`_ 的代码并运行。
 
    .. code-block:: shell
 
