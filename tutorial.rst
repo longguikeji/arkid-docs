@@ -135,7 +135,7 @@ Docker 部署
 
        python manage.py runserver 0.0.0.0:8000
 
-2. 获取ArkID前端arkid-frontend的代码并运行。通过FE_DEV_PROXY_ONEID指定arkid-core绑定的协议地址与端口号，默认为http://127.0.0.1:8000 。
+2. 获取一账通前端 `arkid-frontend`_ 的代码并运行。通过 ``FE_DEV_PROXY_ONEID`` 来指定 arkid-core 绑定的协议地址与端口号，默认为http://127.0.0.1:8000 。
 
    .. code-block:: shell
 
