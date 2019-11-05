@@ -118,6 +118,37 @@ Docker 部署
 本地调试
 --------
 
+如何部署
+::::::::
+
+1. 获取一账通应用后端 `arkid-core`_ 的代码并运行。
+
+   .. code-block:: shell
+
+       git clone https://github.com/longguikeji/arkid-core.git
+
+       cd arkid-core
+
+       pip install --no-cache-dir -r requirements.txt
+
+       python manage.py migrate
+
+       python manage.py runserver 0.0.0.0:8000
+
+2. 获取一账通前端 `arkid-frontend`_ 的代码并运行。通过 ``FE_DEV_PROXY_ONEID`` 来指定 arkid-core 绑定的协议地址与端口号，默认为http://127.0.0.1:8000 。
+
+   .. code-block:: shell
+
+       git clone https://github.com/longguikeji/arkid-frontend.git
+
+       cd arkid-frontend
+
+       yarn install
+
+       FE_DEV_PROXY_ONEID=http://127.0.0.1:8000 yarn serve
+
+.. _arkid_core: https://github.com/longguikeji/arkid-core
+.. _arkid_frontend: https://github.com/longguikeji/arkid-frontend
 ``settings_local.py`` 详解
 --------------------------
 
