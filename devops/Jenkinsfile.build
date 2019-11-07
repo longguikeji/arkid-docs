@@ -19,6 +19,15 @@ pipeline {
                 }
             }
         }
+        stage('deploy') {
+            steps {
+                script {
+                    build job: "arkid-docs.deploy.github", parameters: [
+                        string(name: 'FE_VERSION', value: commonFunctions.getDockerImageDevVersion())
+                    ]
+                }
+            }
+        }
     }
     post {
         success {
