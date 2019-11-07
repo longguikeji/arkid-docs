@@ -1,20 +1,44 @@
-# Minimal makefile for Sphinx documentation
-#
+.PHONY: \
+	ci \
+	lint test build \
+	docker-dev docker-dev-build docker-dev-push \
+	docker-prod docker-prod-build docker-prod-push
 
-# You can set these variables from the command line, and also
-# from the environment for the first two.
-SPHINXOPTS    ?=
-SPHINXBUILD   ?= sphinx-build
-SOURCEDIR     = .
-BUILDDIR      = _build
+VERSION ?= 1.0.`date +%Y%m%d`
+BASE_COMMIT_ID ?= ""
 
-# Put it first so that "make" without argument is like "make help".
-help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+ci:
+	docker build --build-arg base_commit_id="origin/master" \
+	-t harbor.longguikeji.com/ark-releases/arkid-docs:$(VERSION) .
 
-.PHONY: help Makefile
+test:
+	python manage.py migrate && python manage.py test siteapi.v1.tests
 
-# Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+lint:
+	@if [ ${BASE_COMMIT_ID}x != ""x ]; \
+	then \
+		git reset ${BASE_COMMIT_ID}; \
+		git add .; \
+	fi
+
+	.git/hooks/pre-commit
+
+build: docker-dev-build
+
+docker-dev: docker-dev-build docker-dev-push
+
+docker-dev-build:
+	docker build -t harbor.longguikeji.com/ark-releases/arkid-docs:$(VERSION) .
+
+docker-dev-push:
+	docker push harbor.longguikeji.com/ark-releases/arkid-docs:$(VERSION)
+
+docker-prod: docker-prod-build docker-prod-push
+
+docker-prod-build:
+	docker build -t  harbor.longguikeji.com/ark-releases/arkid-docs:$(VERSION) .
+
+docker-prod-push:
+	docker push harbor.longguikeji.com/ark-releases/arkid-docs:$(VERSION)
+
+include custom.Makefile
