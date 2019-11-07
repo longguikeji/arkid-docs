@@ -28,5 +28,4 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-.. 
-    TODO: 索引
+.. TODO: 索引
