@@ -1,0 +1,29 @@
+@Library('longgui-ci') _
+
+pipeline {
+    agent any
+
+    stages {
+        stage('pre'){
+            steps{
+                script {
+                    commonFunctions.replacePyPIRegistry()
+                }
+            }
+        }
+        stage('ci'){
+            steps{
+                script {
+                    commonFunctions.ci()
+                }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                commonFunctions.updateCommitStatus()
+            }
+        }
+    }
+}

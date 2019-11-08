@@ -1,0 +1,55 @@
+@Library('longgui-ci') _
+
+pipeline {
+    agent any
+    environment {
+        SSH_CREDENTIAL = 'devops-longguikeji-ssh'
+    }
+
+    parameters {
+        string(name: "FE_VERSION", description: "tag of fe image, allow blank")
+    }
+
+    stages {
+        stage('pre') {
+            steps{
+                script {
+                    commonFunctions.sendDingTalk("pending", "开始构建")
+                }
+            }
+        }
+        stage("deploy") {
+            steps {
+                withCredentials([sshUserPrivateKey(
+                    credentialsId: "${env.SSH_CREDENTIAL}",
+                    keyFileVariable: "SSH_KEY",
+                    usernameVariable: "SSH_USER",
+                )]) {
+                    script {
+                        deploy()
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            script {
+                commonFunctions.sendDingTalk("success", "构建成功")
+            }
+        }
+        failure {
+            script {
+                commonFunctions.sendDingTalk("failure", "构建失败")
+            }
+            
+        }
+    }
+}
+
+def deploy(){
+    sh """
+    ssh -o "StrictHostKeyChecking=no" ${SSH_USER}@${env.PROD_HOST_IP} -p${env.PROD_HOST_PORT} -i ${SSH_KEY} \
+        'make FE_VERSION=${params.FE_VERSION} update-arkid-docs'
+    """
+}
