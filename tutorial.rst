@@ -1075,23 +1075,29 @@ OAuth2.0 定义了四个角色、两种客户端类型、四种授权类型以�
 .. TODO:
    理论说明 + ASCII 图片 in RFC6749
 
-   * 第一步，客户端向授权端点发送 HTTP GET 请求，指定 URI 参数 \
-     ``response_type`` 为 ``code`` 并附带自身 ``client_id`` 作为参数。
+1. 首先，客户端向授权端点发送 HTTP GET 请求，指定 URI 参数 \
+   ``response_type`` 为 ``code`` 并附带自身 ``client_id`` 作为参数。
 
    .. code-block:: bash
+
       http -F get https://YOUR_ARK_ID_INSTANCE_HOSTNAME/oauth/authorize/ \
       response_type==code client_id==YOUR_CLIENT_ID
 
-   此时授权端点会返回 HTTP 302 并跳转到一账通的授权界面，如果用户尚未登录一账通，可能会被要求登录。在用户确认授权之后一账通会重定向到应用所指定的重定向端点，形如
+   此时授权端点会返回 HTTP 302 并跳转到一账通的授权界面，如果用户尚未登录一账通，\
+   可能会被要求登录。在用户确认授权之后一账通会重定向到应用所指定的重定向端点，形如
 
    .. code-block::
+
       YOUR_REDIRECTION_ENDPOINT_SCHEMA/?code=RANDOM_AUTHORIZATION_CODE
 
-   * 第二步，应用响应该请求并从 URI 中提取授权码。
+2. 客户端应响应该请求并从 URI 中提取授权码。
 
-   * 第三步，应用通过 HTTP 表单向令牌端点 POST 得到的授权码并指定 ``grant_type`` 为 ``authorization_code``。如果是公开客户端，可以附带 ``client_id`` 以标识身份。如果是机密客户端，推荐使用 HTTP Basic Auth 传输 ``client_id`` 与 ``client_secret``。
+3. 接下来客户端会通过 HTTP 表单向令牌端点 POST 得到的授权码并指定 ``grant_type`` 为 \
+   ``authorization_code``。如果是公开客户端，可以附带 ``client_id`` 以标识身份。\
+   如果是机密客户端，推荐使用 HTTP Basic Auth 传输 ``client_id`` 与 ``client_secret``。
 
    .. code-block:: bash
+
       http -a YOUR_CLIENT_ID:YOUR_CLIENT_SECRET \
       -f POST https://YOUR_ARK_ID_INSTANCE_HOSTNAME/oauth/token/ \
       grant_type=authorization_code code=RANDOM_AUTHORIZATION_CODE
@@ -1099,25 +1105,28 @@ OAuth2.0 定义了四个角色、两种客户端类型、四种授权类型以�
    此时令牌端点会返回一个含有访问令牌与刷新令牌的 JSON 响应：
 
    .. code-block:: json
+
       {
-          "access_token": "YOUR_ACCESS_TOKEN",
-          "expires_in": 36000,
-          "refresh_token": "YOUR_REFRESH_TOKEN",
-          "scope": "read write",
-          "token_type": "Bearer"
+         "access_token": "YOUR_ACCESS_TOKEN",
+         "expires_in": 36000,
+         "refresh_token": "YOUR_REFRESH_TOKEN",
+         "scope": "read write",
+         "token_type": "Bearer"
       }
 
    其中 ``token_type`` 说明这是一个简单的 `Bearer 令牌`_，可以通过在请求头中加入 ``Authorization: 'Bearer your_access_token'`` 来访问受保护的资源。
 
-   * 通过访问资源服务器（一账通界面中的身份信息地址），此应用可以读写（依权限而定）当前登录用户的用户信息了：
+4. 通过访问资源服务器（一账通界面中的身份信息地址），此应用可以读写（依权限而定）当前登录用户的用户信息了：
 
    .. code-block:: bash
+
       http -f -F get  https://YOUR_ARK_ID_INSTANCE_HOSTNAME/oauth/userinfo \
       Authorization:'Bearer YOUR_ACCESS_TOKEN'
 
-   * 刷新一个已经过期了的访问令牌以得到新的访问令牌与刷新令牌是容易的：
+5. 刷新一个已经过期了的访问令牌以得到新的访问令牌与刷新令牌是容易的：
 
    .. code-block:: bash
+
       http -a YOUR_CLIENT_ID:YOUR_CLIENT_SECRET \
       -f POST https://YOUR_ARK_ID_INSTANCE_HOSTNAME/oauth/token/ \
       grant_type=refresh_token refresh_token=YOUR_REFRESH_TOKEN
