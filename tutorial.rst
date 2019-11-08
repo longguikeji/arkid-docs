@@ -323,8 +323,6 @@ Docker 部署
 用户界面
 ========
 
-以下几乎所有内容均基于「已经存在一个拥有图形界面的一账通实例，并且用户在该实例拥有管理员权限」这一假设，不妨设这一实例的地址为 ``https://arkid-example.com``，管理员的用户名与密码分别为 ``admin`` 与 ``password``。
-
 使用 Web 图形界面
 -----------------
 
@@ -601,13 +599,236 @@ Docker 部署
 使用 HTTP API 接口
 ------------------
 
+如果一账通实例的维护者认为使用一整个 Web 图形客户端太重了或没有必要，\
+也可以选择只部署一账通的核心组件并利用一账通丰富的 RESTful HTTP API 来完成管理任务。\
+本节的目的是通过两个小例子来帮助用户初步熟悉一账通的 API ，并完成一些真实的管理操作。
+
+.. seealso::
+   * 关于如何部署 'client-free' 的一账通实例，请参见 `部署与配置`_。
+   * 这里是完整的 `一账通 API 文档`_。
+
+
 例：使用 HTTPie 命令行工具进行权限管理
 ::::::::::::::::::::::::::::::::::::::
 
 例：使用 Python 脚本进行第三方应用接入
 ::::::::::::::::::::::::::::::::::::::
-.. ASYNC CROSS REFERENCE:
-   第三方接入
+
+这个例子将会使用经典的 Python HTTP 客户端库 ``requests`` 来实现简单的第三方应用接入配置，\
+如果读者对 Python 语言或 ``requests`` 不甚熟悉，也可以换用任何自己喜欢的语言来完成这个小例子。
+
+.. seealso::
+   * `第三方应用接入`_
+   * `requests 中文文档`_
+   * `Python 官方教程`_
+
+1. 我们首先导入 ``requests`` 包。如果用户的 Python 环境中没有 ``requests``，需要先自行安装。
+
+   .. code-block:: python
+
+      import requests
+2. 请根据当前一账通实例的网络配置自行填写请求的目标 URL。
+
+   .. code-block:: python
+
+      prefix = 'https://your_domain_or_ip_address'
+
+3. 和上一小节一样，我们通过向登录 API 发送管理员的用户名与密码（默认为 ``admin, admin``）\
+   来得到一个 ``token``，并在后续请求中附带这个 ``token`` 来进行特权操作。\
+   这段代码使用了装饰器，以使得我们不必手动完成大量「先将 ``token`` 放进 ``headers`` 里，然后再发送请求」之类无聊的操作。
+
+   .. code-block:: python
+
+      def login(username, password):
+          rsp = requests.post(f'{prefix}/siteapi/oneid/ucenter/login/', \
+                              json={'username': username, 'password': password})
+          token = rsp.json()['token']
+
+          def withuser(method):
+              def wrap(*args, **kwargs):
+                 if 'headers' not in kwargs:
+                     kwargs['headers'] = { 'AUTHORIZATION': f'Token {token}' }
+                 else:
+                     kwargs['headers']['AUTHORIZATION'] = f'Token {token}'
+                 return method(*args, **kwargs)
+              return wrap
+          return withuser
+
+       @login('admin', 'admin')
+       def post(*args, **kwargs):
+           return requests.post(*args, **kwargs)
+
+4. 然后我们通过向 ``/siteapi/oneid/app/`` POST 一个包含该应用的创建信息的 \
+   JSON 对象来创建一个应用，其中应用的名称是唯一的必选项。
+
+   .. code-block:: python
+
+      def create_app(name, **kwargs):
+          app = { 'name': name }
+
+          # more configuration stuffs
+
+          return post(f'{prefix}/siteapi/oneid/app/', json=app)
+
+5. 首先，一账通需要请求者指定一个鉴权协议的列表，先将它置空。
+
+   .. code-block:: python
+
+      auth_protocols = []
+
+6. 使用 LDAP 或 HTTP 鉴权协议不需要配置任何参数，所以我们将 ``ldap_app`` 与 ``http_app`` 都置空。
+
+   .. code-block:: python
+
+      if 'ldap' in kwargs:
+          app['ldap_app'] = {}
+          auth_protocols.append('LDAP')
+      if 'http' in kwargs:
+          app['http_app'] = {}
+          auth_protocols.append('HTTP')
+
+7. 使用 OAuth2.0 则需要用户指定一些配置，见下文。
+
+   .. code-block:: python
+
+      if 'oauth' in kwargs:
+          app['oauth_app'] = kwargs['oauth']
+          auth_protocols.append('OAuth2.0')
+
+8. 应用备注与跳转链接同样是能够配置的可选项。
+
+   .. code-block:: python
+
+      if 'remark' in kwargs:
+          app['remark'] = kwargs['remark']
+      if 'index' in kwargs:
+          app['index'] = kwargs['index']
+
+9. 虽然不指定鉴权协议依然可以指定一个应用，但我们不希望创建这种毫无意义的空应用。
+
+   .. code-block:: python
+
+      if not auth_protocols:
+          raise '至少指定一个鉴权协议！'
+      else:
+          app['auth_protocols'] = auth_protocols
+
+10. 现在我们可以真正创建一个应用了。``oauth`` 中各项参数的具体含义参见 \
+    `OAuth2.0`_ 一节，其中 ``redirect_uris`` 为必选项。
+
+   .. code-block:: python
+
+      oauth = { 'redirect_uris': 'your_redirection_endpoint', 'client_type': 'public', 'authorization_grant_type': 'implicit' }
+      app = create_app('your_app_name', remark='your_app_remark', index='your_app_index', oauth=oauth)
+
+      print(app.text)
+
+11. 运行这个程序，屏幕上打印出来的结果即为新添加的第三方应用配置接入所必须的信息，\
+    关于第三方应用自身如何利用这些信息完成鉴权，同样请参见 `OAuth2.0`_ 一节。
+
+   .. code-block:: json
+
+      {
+         "app_id":1,
+         "uid":"yourappname",
+         "name":"your_app_name",
+         "index":"your_app_index",
+         "logo":"",
+         "remark":"your_app_remark",
+         "oauth_app":{
+            "client_id":"${client_id}",
+            "client_secret":"${client_secret}",
+            "redirect_uris":"your_redirection_endpoint",
+            "client_type":"public",
+            "authorization_grant_type":"implicit",
+            "more_detail":[
+               {
+                  "name":"认证地址",
+                  "key":"auth_url",
+                  "value":"{$prefix}/oauth/authorize/"
+               },
+               {
+                  "name":"获取token地址",
+                  "key":"token_url",
+                  "value":"{$prefix}/oauth/token/"
+               },
+               {
+                  "name":"身份信息地址",
+                  "key":"profile_url",
+                  "value":"{$prefix}/oauth/userinfo/"
+               }
+            ]
+         },
+         "ldap_app":null,
+         "http_app":null,
+         "allow_any_user":false,
+         "auth_protocols":[
+            "OAuth 2.0"
+         ]
+      }
+
+组织完整的该程序 Python 源代码如下，建议读者将它直接复制到本地作为脚手架来实现读者感兴趣的其他功能。
+
+.. code-block::
+
+   import requests
+
+   prefix = 'https://your_domain_or_ip_address'
+
+   def login(username, password):
+       rsp = requests.post(f'{prefix}/siteapi/oneid/ucenter/login/', \
+                     json={'username': username, 'password': password})
+       token = rsp.json()['token']
+
+       def withuser(method):
+           def wrap(*args, **kwargs):
+               if 'headers' not in kwargs:
+                   kwargs['headers'] = { 'AUTHORIZATION': f'Token {token}' }
+               else:
+                   kwargs['headers']['AUTHORIZATION'] = f'Token {token}'
+               return method(*args, **kwargs)
+           return wrap
+       return withuser
+
+   @login('admin', 'admin')
+   def post(*args, **kwargs):
+       return requests.post(*args, **kwargs)
+
+   def create_app(name, **kwargs):
+       auth_protocols = []
+       app = { 'name': name }
+
+       if 'remark' in kwargs:
+           app['remark'] = kwargs['remark']
+       if 'index' in kwargs:
+           app['index'] = kwargs['index']
+
+       if 'ldap' in kwargs:
+           app['ldap_app'] = {}
+           auth_protocols.append('LDAP')
+       if 'http' in kwargs:
+           app['http_app'] = {}
+           auth_protocols.append('HTTP')
+       if 'oauth' in kwargs:
+           app['oauth_app'] = kwargs['oauth']
+           auth_protocols.append('OAuth2.0')
+
+       if not auth_protocols:
+           raise '至少指定一个验证协议！'
+       else:
+           app['auth_protocols'] = auth_protocols
+
+       return post(f'{prefix}/siteapi/oneid/app/', json=app)
+
+   oauth = { 'redirect_uris': 'your_redirection_endpoint', 'client_type': 'public', 'authorization_grant_type': 'implicit' }
+   app = create_app('your_app_name', remark='your_app_remark', index='your_app_index', oauth=oauth)
+
+   print(app.text)
+
+.. _一账通 API 文档: https://oneid.docs.apiary.io/
+.. _Python 官方教程: https://docs.python.org/zh-cn/3/tutorial/
+.. _requests 中文文档: https://cn.python-requests.org/zh_CN/latest/
+
 
 第三方应用接入
 ==============
@@ -957,12 +1178,13 @@ HTTP API
 贡献指南
 ===============
 
-如果你在使用一账通的过程中遇到了 bug，或者期望某个一账通现在还不支持的特性，欢迎你在 `一账通 issue 主页`_  提出宝贵的意见和建议。
-如果你顺手修复了这个 bug，或者实现了这个特性，为了使你的工作能让更多人受益，也为了避免你的代码与一账通的后续开发产生冲突，请按照 Fork -> Patch -> Push -> Pull Request 的流程来和大家分享你的代码。
+如果你在使用一账通的过程中遇到了 bug，或者期望某个一账通现在还不支持的特性，欢迎你在 `一账通 issue 主页`_  \
+提出宝贵的意见和建议。如果你顺手修复了这个 bug，或者实现了这个特性，为了使你的工作能让更多人受益，\
+也为了避免你的代码与一账通的后续开发产生冲突，请按照 Fork -> Patch -> Push -> Pull Request 的流程来和大家分享你的代码。
 
 .. attention::
    在提交 issue 或 pull request 之前请务必阅读以下内容。
-   
+
    :Bug:
       在提 issue 之前，请先搜索一下同样的 bug 是否已经被反馈过了。如果没有，请创建一个新的 issue并反馈遇到此问题的环境、背景，以及如何复现这个 bug。详细、准确的描述可以加快问题解决的速度。
    :特性:
