@@ -141,6 +141,10 @@ Docker 部署
 
       python manage.py runserver 0.0.0.0:8000
 
+      celery -A celery_app worker -Q default,perm -l debug
+
+      celery -A celery_app beat -l debug
+
 2. 获取一账通前端 `arkid-frontend`_ 的代码并运行。通过 ``FE_DEV_PROXY_ONEID`` 来指定 arkid-core 绑定的协议地址与端口号，默认为http://127.0.0.1:8000 。
 
    .. code-block:: shell
@@ -290,6 +294,7 @@ Docker 部署
 
    LDAP_SERVER = 'ldap://192.168.3.9'
    LDAPS_SERVER = 'ldaps://192.168.3.9'
+   LDAP_CLUSTER_ADDR = ''    # 集群内地址，非k8s环境留空即可。k8s环境则会自动填充。
    LDAP_BASE = 'dc=longguikeji,dc=com'
    LDAP_USER = 'cn=admin,dc=longguikeji,dc=com'
    LDAP_PASSWORD = 'admin'
