@@ -141,7 +141,7 @@ Docker 部署
 
       python manage.py runserver 0.0.0.0:8000
 
-      celery -A celery_app worker -Q default,perm,sql_ldap -l debug
+      celery -A celery_app worker -Q default,perm -l debug
 
       celery -A celery_app beat -l debug
 
