@@ -114,9 +114,38 @@ Kubernetes 的 ConfigMap 组件存在。因此在本小节中，除非显式说�
 
 Docker 部署
 -----------
+.. seealso::
+   * `Docker Compose 官方文档`_
+   * `一账通 docker-compose 配置`_
 
-.. ASYNC TODO:
-   Docker Compose
+环境需求
+::::::::
+
+:必需:
+   * docker
+   * docker-compose
+
+如何部署
+::::::::
+
+1. 下载一账通源码
+
+    .. code-block:: shell
+
+      git clone https://github.com/longguikeji/arkid-core.git
+      cd arkid-core/docker-compose
+
+2. 按提示修改 .env 文件、be/settings.py 文件
+
+3. 使用 docker-compose 启动一账通
+
+    .. code-block:: shell
+
+      docker-compose up
+
+4. 访问一账通
+
+   打开 http://localhost:8989 (具体端口视 .env 中 HTTP_PORT 而定)，以内置账号 admin / admin 登录。
 
 手工部署
 --------
@@ -319,6 +348,9 @@ Docker 部署
 
 .. _Kubernetes 官方文档: https://kubernetes.io/zh/docs/
 .. _Helm 用户指南: https://whmzsu.github.io/helm-doc-zh-cn/
+
+.. _Docker Compose 官方文档: https://docs.docker.com/compose/
+.. _一账通 docker-compose 配置: https://github.com/longguikeji/arkid-core/tree/master/docker-compose
 
 
 .. _Ingress 控制器: https://kubernetes.io/zh/docs/concepts/services-networking/ingress-controllers/
