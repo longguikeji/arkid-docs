@@ -2452,7 +2452,7 @@ v * -> v 1.3.2
 
 1、备份原 arkid-charts/chart 中 values.yaml 配置文件
 
-2、获取一账通 v1.3.2 版本的 Helm Chart
+2、获取 v1.3.2 版本的一账通的 Helm Chart
 
    .. code-block:: shell
 
@@ -2465,9 +2465,9 @@ v * -> v 1.3.2
 
    .. code-block:: shell
 
-      helm upgrade <pod_name> .
+      helm upgrade <name> .
 
-5、如果出现 'Release "<pod_name>" has been upgraded.Happy Helming!' , 则表明一账通升级成功。
+5、如果出现 'Release "<name>" has been upgraded.Happy Helming!' , 则表明一账通升级成功。
 
 通过 Docker 升级
 :::::::::::::::::::
