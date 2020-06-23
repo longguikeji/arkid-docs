@@ -83,7 +83,7 @@ Kubernetes 部署
 Kubernetes 的 ConfigMap 组件存在。因此在本小节中，除非显式说明，所有的文字均关联于对 ``values.yaml`` 的检视或修改。
 
 .. ASYNC CROSS REFERENCE TODO:
-   ArkOS
+ArkOS
 
 :必须:
    * *必须* 配置 ``settingsLocal`` ConfigMap 项到合适的状态，详见 `settings_local.py 详解`_。
@@ -99,18 +99,18 @@ Kubernetes 的 ConfigMap 组件存在。因此在本小节中，除非显式说�
      ``ldap.adminPassword`` 为合适的口令。
 
 .. ASYNC TODO:
-   Disable FE
+Disable FE
 
 :可选:
 
 .. TODO:
-   Separate OPTIONAL, SHOULD NOT & MUST NOT
+Separate OPTIONAL, SHOULD NOT & MUST NOT
 
 部署流程解析
 ::::::::::::
 
 .. TODO:
-   Deployment Process
+Deployment Process
 
 Docker 部署
 -----------
@@ -193,8 +193,8 @@ Docker 部署
 --------------------------
 
 .. TODO
-   Docker Compsoe
-   Manual
+Docker Compsoe
+Manual
 
 ``settings_local.py`` 本质上是对 Django 框架默认配置文件 ``settings.py`` 的覆写，\
 但一账通不推荐用户修改除开发人员暴露出来的部分之外的任何配置。该文件的配置样例详见 `settings_example.py`_，\
@@ -497,7 +497,7 @@ Docker 部署
    当同步完成之后，在一账通平台上的任何修改都会同步应用到目标平台之上，但目标平台上的修改并不会反向同步给一账通，因此不推荐在同步完成之后修改目标平台的用户数据。
 
 .. TODO:
-   用户模型映射算法？
+用户模型映射算法？
 
 应用配置
 ........
@@ -605,7 +605,7 @@ Docker 部署
    子管理员
 
 .. TODO:
-   权限的详细定义
+权限的详细定义
 
 其他
 ....
@@ -1252,7 +1252,7 @@ Docker 部署
    当同步完成之后，在一账通平台上的任何修改都会同步应用到目标平台之上，但目标平台上的修改并不会反向同步给一账通，因此不推荐在同步完成之后修改目标平台的用户数据。
 
 .. TODO:
-   用户模型映射算法？
+用户模型映射算法？
 
 分组管理
 ........
@@ -1514,7 +1514,7 @@ Docker 部署
 可点击子管理员组后的编辑按钮进入「编辑子管理员」页面。编辑子管理员组可对子管理员的一切内容进行修改，也可以删除该分组。编辑或删除之后，权限也会发生相应变化。
 
 .. TODO:
-   权限的详细定义
+权限的详细定义
 
 操作日志
 ''''''''
@@ -2107,7 +2107,7 @@ OAuth2.0 定义了四个角色、两种客户端类型、四种授权类型以�
 本节部分内容为实现所定义（如权限的类型），并未在 RFC6749 中详细说明。
 
 .. TODO:
-   More custom blocks (e.g. Defined by Impl)
+More custom blocks (e.g. Defined by Impl)
 
 授权端点
    方法
@@ -2159,10 +2159,10 @@ OAuth2.0 定义了四个角色、两种客户端类型、四种授权类型以�
       ================= ============ =============
 
 .. TODO:
-   token-type spec?
+token-type spec?
 
 .. TODO:
-   Para client_* list
+Para client_* list
 
 重定向端点
    * 必须是 `Absolute URI`_。
@@ -2217,9 +2217,9 @@ OAuth2.0 定义了四个角色、两种客户端类型、四种授权类型以�
 
 
 .. TODO:
-   把Grant Flow讲清楚摆上去
-   详细定义参数之间的联系
-   完备阐述scope与state
+把Grant Flow讲清楚摆上去
+详细定义参数之间的联系
+完备阐述scope与state
 
 关于一账通
 ::::::::::
@@ -2243,7 +2243,7 @@ OAuth2.0 定义了四个角色、两种客户端类型、四种授权类型以�
 ::::::::::::::::::
 
 .. TODO:
-   理论说明 + ASCII 图片 in RFC6749
+理论说明 + ASCII 图片 in RFC6749
 
 1. 首先，客户端向授权端点发送 HTTP GET 请求，指定 URI 参数 \
    ``response_type`` 为 ``code`` 并附带自身 ``client_id`` 作为参数。
@@ -2302,7 +2302,7 @@ OAuth2.0 定义了四个角色、两种客户端类型、四种授权类型以�
       grant_type=refresh_token refresh_token=YOUR_REFRESH_TOKEN
 
 .. TODO:
-   用户信息规格说明
+用户信息规格说明
 
 
 隐式许可流程详解
@@ -2324,7 +2324,7 @@ OAuth2.0 定义了四个角色、两种客户端类型、四种授权类型以�
          此处返回的 ``scope`` 参数指示了授权服务器最终提供给该客户端的权限范围
 
 .. GLOBAL TODO:
-   Using footnotes instead of parentheses
+Using footnotes instead of parentheses
 
 
 .. _RFC6749: https://github.com/jeansfish/RFC6749.zh-cn
@@ -2404,6 +2404,101 @@ LDAP 协议的配置较为简单，管理员在配置应用时只需在「协议
 
 HTTP API
 --------
+
+Django 插件
+=================
+
+现在您可以将一账通直接导入到您的 Django 项目中去，这样做可以为您减少大量的代码空间
+
+要求
+-----
+
+:ArkID框架要求以下内容:
+
+ * python （3.6）
+ * django （2.0、2.1、2.2、3.0）
+ * djangorestframework （3.10.2+）
+ * django-cors-headers （2.5.3+）
+ * celery （4.2.1+）
+ * django-celery-results （1.0.1+）
+ * django-celery-beat （1.1.1+）
+ * rules （2.0+）
+ * passlib （*）
+ * django-oauth-toolkit （1.2.0+）
+ * django-cors-middleware （1.4.0+）
+ * redis （3.2.0+）
+ * sqlparse （*）
+ * cryptography （2.8+）
+ * django-redis （4.10.0+）
+ * repoze-who （2.3+）
+ * cherrypy （18.4.0+）
+
+我们强烈建议python和Django为官方正式的最新修补版本。
+
+:以下软件包是可选的:
+
+ * pyjwkest （*） -支持JWT, JWS, JWE, JWK等编码解码。
+ * pysaml2 （4.9.0+） -支持构建构建SAML2服务提供者或身份提供者。
+ * ldap3 （2.5.2+） -包装OpenLDAP 2.x库。
+ * minio （4.0.18+） -支持访问任何与Amazon S3兼容的对象存储服务器
+ * alipay-sdk-python （3.3.202+） -支持访问蚂蚁金服开放平台的官方SDK。
+ * coreapi （2.3.3+） -支持模式生成。
+ * pypinyin （*） -支持将汉字转为拼音，可用于汉字注音、排序、检索。
+ * aliyun-python-sdk-core-v3 （2.8.6+） -Aliyun Python SDK的核心模块。
+ * kubernetes （10.0.0+） -kubernetes的Python客户端
+ * pyasn1 （0.4.8+） -ASN.1类型和DER / BER / CER编解码器（X.208）
+ * django-simple-captcha （0.5.12+） -支持将验证码图像添加到Django表单中。
+ * django-jsonfield （1.2.0+） -支持灵活查询JSONField和相关表单字段
+ * mako （1.1.0+） -支持提供一种非XML语法。
+
+安装
+-----
+
+使用pip进行安装，包括您所需的任何可选软件包...
+::::::::::::::::::::::::::::::::::::::::::::
+
+* pip install django-arkid
+* pip install pyjwkest
+* pip install ldap3
+
+...或从github克隆项目.
+::::::::::::::::::::::::::
+
+git clone https://github.com/longguikeji/arkid-core.git
+
+添加 'arkid' 到您的INSTALLED_APPS设置.
+:::::::::::::::::::::::::::::::::::::::::
+
+   .. code-block:: python
+
+      INSTALLED_APPS = [
+       ...
+       'arkid',
+       'arkid.oauth2_provider'
+       ]
+
+
+添加某些 app 时，可能需要在您的 django 项目的配置文件中手动添加某些参数，以保证 ArkID 可以完美的为您提供服务.
+当然，这些被 ArkID 需要的参数都可以在 arkid.oneid.settings_setup.py 中找到，其中包含了默认的参数配置.
+您可以参照默认配置文件来对您的项目采取相应的配置策略.
+
+如果您打算使用ArkID框架的相关URL。可将以下内容添加到您的根urls.py文件中
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+   .. code-block:: python
+
+      urlpatterns = [
+         ...
+         url(r'^api-auth/', include('arkid.oauth2_provider.urls'))
+    ]
+
+
+.. attention::
+
+   :必需参数设置:
+      如果您正在尝试使用 ArkID 框架来丰富您的项目，请注意以下几个问题:
+         * 如果您试图使用 ArkID 框架相关接口功能，请务必设置 REST_FRAMEWORK， AUTHENTICATION_BACKENDS， CELERY 组件相关的参数，可参照 arkid.oneid.settings_setup.py 中的相关说明进行操作.
+         * 当您在使用 ArkID 框架时遇到任何 NotConfiguredException 异常时，说明您的项目配置文件中缺少 ArkID 框架所必需的参数，请您务必参照 arkid.oneid.settings_setup.py 中的相关说明进行操作.
 
 \*一账通架构解析
 =================
