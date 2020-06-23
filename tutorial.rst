@@ -9,7 +9,7 @@
 由于项目结构相对复杂，部署与配置较为繁琐，推荐使用 Helm_ 在 Kubernetes_ 上进行部署以避免手工配置协调项目组件。\
 
 
-================ ==============
+================ ============
  部署方式          建议
 ---------------- --------------
 Kubernetes 部署    推荐
@@ -2525,3 +2525,81 @@ git clone https://github.com/longguikeji/arkid-core.git
       * 本地开发时，如果环境装有 docker，可以通过 ``make ci`` 的命令自行检查。如果没有可以通过 ``make lint test`` 代替。
 
 .. _一账通 issue 主页: https://github.com/longguikeji/arkid-core/issues
+
+版本升级
+========
+
+v * -> v 1.3.2
+----------------
+
+在v1.3.2的新版本中，新增用户自定义字段的搜索及范围搜索功能，您可基于如下提示进行升级操作，避免数据丢失。
+
+数据库
+:::::::::
+
+在新版本中，由于用户自定义字段基于MySQL的JSON数据类型开发，所以如果您需要用到用户自定义字段相关功能，请务必使用MySQL作为数据存储且MySQL的版本号不低于5.7。
+有关MySQL的JSON数据类型可参考 `MySQL Docs`_ 。如果您的数据库低于5.7版本，请务必在数据成功备份后进行数据库升级和迁移。
+
+.. _MySQL Docs: https://dev.mysql.com/doc/refman/5.7/en/json.html
+
+通过 kubernetes 升级
+:::::::::::::::::::::::
+
+1、备份原 arkid-charts/chart 中 values.yaml 配置文件
+
+2、获取 v1.3.2 版本的一账通的 Helm Chart
+
+   .. code-block:: shell
+
+      git clone -b 0.1.2 https://github.com/longguikeji/arkid-charts.git
+      cd arkid-charts/chart
+
+3、将步骤 1 中配置文件替换到 arkid-charts/chart 中
+
+4、使用 helm upgrade 对一账通进行升级
+
+   .. code-block:: shell
+
+      helm upgrade <name> .
+
+5、如果出现 'Release "<name>" has been upgraded.Happy Helming!' , 则表明一账通升级成功。
+
+通过 Docker 升级
+:::::::::::::::::::
+
+1、备份原 arkid-core/docker-compose 中 .env 配置文件、be/settings.py 配置文件
+
+2、获取 v1.3.2 版本一账通源码
+
+   .. code-block:: shell
+
+      git clone -b 1.3.2 https://github.com/longguikeji/arkid-core.git
+      cd arkid-core/docker-compose
+
+3、将步骤 1 中配置文件替换到 arkid-core/docker-compose 中
+
+4、重新启动一账通
+
+   .. code-block:: shell
+      docker-compose stop
+      docker-compose build
+      docker-compose up
+
+通过手动升级
+::::::::::::::::::
+
+1、获取一账通 v1.3.2 版本代码
+
+   .. code-block:: shell
+
+      git clone https://github.com/longguikeji/arkid-core.git
+      cd arkid-core/
+
+2、手动迁移数据库
+
+   .. code-block:: shell
+
+      pip install --no-cache-dir -r requirements.txt
+      python manage.py migrate
+
+3、重新启动一账通
