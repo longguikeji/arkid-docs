@@ -2603,3 +2603,21 @@ v * -> v 1.3.2
       python manage.py migrate
 
 3、重新启动一账通
+
+v 1.3.8 -> v 1.3.9
+--------------------
+
+在v1.3.8 到v1.3.9的版本升级中，在出现无法部署的情况时，需要手动修改MySQL的表数据
+
+MySQL数据库
+:::::::::::
+
+1、django_migrations表中删除name字段为0076_pwdconfig及以后序列号(例0077_xxxx)的记录
+
+2、删除第1步骤中对应记录的表结构，其中0079_auto_20200803_2109记录对应的表为oneid_meta_githubuser、oneid_meta_githubconfig
+
+3、尝试修改oneid_meta_accountconfig表结构:删除allow_github列
+
+4、重新部署
+
+***注意:上述步骤仅代表大致操作，如果出现某些资源不存在的情况可直接略过。***
